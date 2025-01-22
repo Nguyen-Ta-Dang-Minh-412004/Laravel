@@ -51,4 +51,10 @@ class TableController extends Controller
         Table::destroy($id);
         return response()->json(['message' => 'Table deleted']);
     }
+
+    public function findByArea($area_id) // Changed parameter to area_id for simplicity
+    {
+        // Trả về các bàn thuộc khu vực
+        return Table::where('area_id', $area_id)->get(); // Using area_id directly
+    }
 }
