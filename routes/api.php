@@ -28,7 +28,9 @@ Route::prefix('tables')->group(function () {
     Route::post('/create', [TableController::class, 'store']);        // Tạo mới bàn
     Route::put('/update/{id}', [TableController::class, 'update']);    // Cập nhật thông tin bàn
     Route::delete('/delete/{id}', [TableController::class, 'destroy']); // Xóa bàn
+    Route::get('/findByArea/{area_id}', [TableController::class, 'findByArea']); // Tìm bàn theo khu vực
 });
+
 
 // API Routes cho players
 Route::prefix('players')->group(function () {
