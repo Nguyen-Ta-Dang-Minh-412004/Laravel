@@ -1,0 +1,716 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --font-family: "Poppins", sans-serif;
+    --color: #2196f3;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+ul {
+    list-style-type: none;
+}
+
+header{
+    width: 100%;
+    height: 110px;
+    font-family: var(--font-family);
+}
+.icon{
+    margin-top: -5px;
+}
+.icon a{
+    display: flex;
+    align-items: center;
+}
+.icon i {
+    font-size: 30px;
+    color: rgb(146, 169, 226);
+    margin-left: 10px;
+}
+
+.head1{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.head1 a p{
+    font-size: 15px;
+}
+
+.head1 .head_conten {
+    margin-left:10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.head_conten a{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    font-size: 18px;
+
+}
+.head_conten i{
+    font-size: 20px;
+    margin-right: 20px;
+    margin-left: 5px;
+}
+.head_conten .borrow {
+    margin: 5px 20px;
+}
+.head_conten .borrow a i{
+    color: rgb(67, 136, 200);
+    margin-right: 10px;
+}
+
+.head1 .LogInClient{
+    width: 40%;
+    height: 300px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    display: none;
+    padding-top: 25px;
+    border-radius: 5px;
+    justify-content: center;
+    transform: translate(-50%, -50%);
+    background-color: rgb(224, 222, 222);
+    z-index: 100;
+    /* background-color: rgba(0, 0, 0, 0.619); */
+}
+.LogInClient form{
+    align-items: center;
+    justify-content: space-around;
+}
+
+.LogInClient form button{
+    width: 65px;
+    height: 30px;
+    margin-left: 40%;
+    border-radius: 3px;
+    align-self: center;
+}
+.LogInClient form button:hover{
+    cursor: pointer;
+}
+.LogInClient .close {
+    color: #aaa;
+    float: right;
+    margin-right: -120px;
+    margin-top: -10px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.LogInClient .close:hover,
+.LogInClient .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+.LogInClient input{
+    width: 200px;
+    height: 20px;
+}
+.head2{
+    width: 100%;
+    height: 60px;
+    background-color: rgb(110, 153, 146);
+    display: flex;
+    justify-items: center;
+    padding-left: 50px;
+    padding-right: 50px;
+    gap: 150px;
+}
+.head2 .contents{
+    display: flex;
+    align-items: center;
+
+    justify-content: space-between;
+    width: 70%;
+}
+.head2 .contents a{
+    display: flex;
+    padding: 0px 10px;
+    max-height: 100%;
+    align-items: center;
+    color: aliceblue;
+    width: 120px;
+    font-size: 15px;
+}
+.head2 .contents a:hover{
+    background-color: rgb(94, 133, 127);
+    transition: all 0.5s;
+}
+.head2 .contents a i{
+    margin-right: 10px;
+}
+
+.head2 .service{
+
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    color: aliceblue;
+    width: 30%;
+}
+.head2 .service i{
+    padding: 18px 18px;
+    margin-top: -2px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.head2 .service i:hover{
+    background-color: rgb(94, 133, 127);
+    transition: all 0.5s;
+}
+
+.head2 .contents .view{
+    display: flex;
+    width: 120px;
+    height: 100%;
+}
+
+main{
+    height: 600px;
+}
+
+.content {
+    margin: 40px 50px 0 50px;
+    height: 100%;
+    display: flex;
+    gap: 30px;
+}
+
+.content aside {
+    width: 25%;
+    height: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.content aside ul {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+}
+
+.content aside ul li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 50px;
+    background-color: #e6e5e5;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    border-radius: 20px;
+}
+
+.content aside ul li a {
+    font-family: var(--font-family);
+    color: black;
+}
+
+.content aside ul li:hover {
+    transform: scale(1.1);
+}
+
+.content aside ul li.active {
+    font-weight: bold;
+    background-color: #2196f3; /* Màu xanh */
+    color: white; /* Màu chữ trắng để tương phản với nền xanh */
+}
+
+.content aside ul li.active a {
+    color: white; /* Đảm bảo màu chữ của liên kết cũng là trắng khi active */
+}
+
+.content article {
+    width: 75%;
+    height: 100%;
+
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.2);
+    padding: 20px; /* Thêm khoảng cách giữa nội dung và viền */
+}
+
+.article-content {
+    display: none; /* Ẩn tất cả các nội dung theo mặc định */
+}
+
+.article-content.active {
+    display: block; /* Hiển thị nội dung khi có class "active" */
+}
+
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 2 cột */
+    gap: 20px; /* Khoảng cách giữa các ảnh */
+    padding: 20px;
+    font-family: var(--font-family);
+}
+
+.table-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 150px;
+    background-color: #d1d1d1;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform   0.3s ease-in-out;
+}
+
+.table-item img {
+    width: 80px; /* Đặt kích thước cho ảnh */
+    height: auto;
+
+}
+
+.table-item .p1{
+    margin-top: 2px;
+    font-family: var(--font-family);
+    color: #000;
+    font-weight: bold;
+}
+
+.table-item a {
+    text-decoration: none;
+}
+
+.table-item:hover{
+    transform: scale(1.1);
+}
+
+.table-item.booked img {
+    filter: hue-rotate(30deg) brightness(1.2); /* Màu cam */
+}
+
+.table-item.paid img {
+    filter: hue-rotate(-90deg) brightness(0.8); /* Màu xanh lá cây */
+}
+
+.popup {
+    display: none; /* Ẩn cửa sổ pop-up theo mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ đen */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đặt z-index cao để cửa sổ pop-up nổi bật hơn các phần tử khác */
+    font-family: var(--font-family);
+}
+
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    height: 300px;
+    width: 400px;
+
+    position: relative;
+}
+
+.popup .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.popup-buttons {
+    position: absolute; /* Đặt vị trí tuyệt đối */
+    bottom: 20px; /* Cách đáy popup 20px */
+    left: 50%; /* Căn giữa theo chiều ngang */
+    transform: translateX(-50%); /* Dịch chuyển về bên trái 50% chiều rộng của chính nó để căn giữa */
+    display: flex; /* Đặt các phần tử bên trong thành flex để xếp ngang */
+    gap: 20px; /* Khoảng cách giữa các nút */
+}
+
+.popup-buttons button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196f3;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    width: 150px;
+    transition: opacity 0.3s ease;
+}
+
+.popup-buttons button:hover {
+    background-color: #1976d2;
+}
+
+.popup-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Trạng thái "Bàn trống" */
+.table-item[data-status="Bàn trống"] .popup-buttons #pay {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Trạng thái "Bàn hỏng" */
+.table-item[data-status="Bàn hỏng"] .popup-buttons button {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dat-ban-popup {
+    display: none; /* Ẩn cửa sổ pop-up theo mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ đen */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đặt z-index cao để cửa sổ pop-up nổi bật hơn các phần tử khác */
+    font-family: var(--font-family);
+}
+
+.dat-ban-popup .popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    height: 350px;
+    width: 600px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Thay đổi thành space-between */
+}
+
+.dat-ban-popup .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #aaa;
+}
+
+.dat-ban-popup .close:hover,
+.dat-ban-popup .close:focus {
+    color: black;
+    text-decoration: none;
+}
+
+.dat-ban-popup .popup-content h2 {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.dat-ban-popup .popup-content .dat-ban-son {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0;
+    gap: 40px;
+    flex-grow: 1;
+}
+
+.dat-ban-popup .popup-content .dat-ban-left,
+.dat-ban-popup .popup-content .dat-ban-right {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.dat-ban-popup .popup-content .son {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: auto;
+}
+
+.dat-ban-popup .popup-content .son p {
+    width: 40%;
+    text-align: left;
+    margin-right: 10px;
+    font-size: 13px;
+}
+
+.dat-ban-popup .popup-content .son input {
+    width: 60%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.dat-ban-popup .popup-content .id-dat-ban input[disabled] {
+    background-color: #f0f0f0;
+    color: #666;
+    cursor: default;
+    user-select: none;
+    pointer-events: none;
+}
+
+.dat-ban-popup .popup-content .id-dat-ban input[disabled]::placeholder {
+    color: #666;
+}
+
+.dat-ban-button{
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin-top: 20px; /* Thêm khoảng cách phía trên nút */
+}
+
+.dat-ban-button button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196f3;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.dat-ban-button button:hover {
+    background-color: #1976d2;
+}
+
+
+
+/*.popup {*/
+/*    display: none; !* Ẩn popup mặc định *!*/
+/*    position: fixed;*/
+/*    z-index: 1;*/
+/*    left: 0;*/
+/*    top: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-color: rgba(0, 0, 0, 0.4); !* Hiệu ứng nền mờ *!*/
+/*}*/
+
+/*.popup-content {*/
+/*    background-color: white;*/
+/*    margin: 15% auto;*/
+/*    padding: 20px;*/
+/*    border: 1px solid #888;*/
+/*    width: 50%; !* Tùy chỉnh kích thước *!*/
+/*}*/
+
+/*.close {*/
+/*    color: #aaa;*/
+/*    float: right;*/
+/*    font-size: 28px;*/
+/*    font-weight: bold;*/
+/*}*/
+
+/*.close:hover,*/
+/*.close:focus {*/
+/*    color: black;*/
+/*    text-decoration: none;*/
+/*    cursor: pointer;*/
+/*}*/
+
+
+footer{
+    width: 100%;
+    height: 120px;
+    display: flex;
+    margin-top: 25px;
+    flex-direction: column;
+    font-family: var(--font-family);
+}
+
+.footer-up{
+    width: 100%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 300px;
+    background-color: #dedcdc;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding-left: 50px;
+    font-size: 15px;
+}
+.footer-down{
+    background-color: #8eccff;
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+}
+.icon{
+    display: flex;
+    gap: 10px;
+}
+
+.footer-up-left{
+    width: 40%;
+}
+.footer-up-mid{
+    width: 30%;
+}
+
+
+/* popup đặt đồ ăn */
+.order-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    font-family: var(--font-family);
+}
+
+.order-modal .order-modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 15px;
+    border: 1px solid #888;
+    width: 60%;
+    max-width: 600px;
+    height: 450px;
+    border-radius: 5px;
+    position: relative;
+    font-family: var(--font-family);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-modal .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.order-modal .popup-header {
+    margin-bottom: 10px;
+}
+
+.order-modal .popup-sections {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.order-modal .section {
+    width: calc(50% - 5px);
+    padding: 8px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    height: 150px;
+    min-height: 100px;
+}
+
+.order-modal .section h3 {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.order-modal .item {
+    margin-bottom: 3px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.order-modal .item label {
+    margin-bottom: 2px;
+    font-size: 0.75em;
+}
+
+.order-modal .item select,
+.order-modal .item input {
+    padding: 3px;
+    font-size: 0.8em;
+}
+
+.order-modal button[type="submit"] {
+    background-color: #2196f3;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: block;
+    margin: 15px auto 0;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+
+.order-modal button[type="submit"]:hover {
+    background-color: #1976d2;
+}
+
+@media (max-width: 768px) {
+    .order-modal .order-modal-content {
+        width: 90%;
+    }
+    .order-modal .section {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.fa-bell-concierge {
+    cursor: pointer; /* Thêm con trỏ để chỉ ra rằng icon có thể nhấn được */
+}
+
+.order-modal {
+    display: none; /* Ẩn modal mặc định */
+    /* Các styles khác giữ nguyên */
+}
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.popup button {
+    margin-top: 10px;
+}
