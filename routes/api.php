@@ -11,6 +11,16 @@ use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\TableTimeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\PositionController;
+
+Route::prefix('position')->group(function () {
+    Route::get('/all', [PositionController::class, 'index']);             // Lấy danh sách chức vụ
+    Route::get('/findId/{id}', [PositionController::class, 'show']);      // Lấy chi tiết chức vụ
+    Route::post('/create', [PositionController::class, 'store']);        // Tạo mới chức vụ
+    Route::put('/update/{id}', [PositionController::class, 'update']);    // Cập nhật chức vụ
+    Route::delete('/delete/{id}', [PositionController::class, 'destroy']); // Xóa chức vụ
+});
 
 // API Routes cho users
 Route::prefix('users')->group(function () {
@@ -63,6 +73,9 @@ Route::prefix('items')->group(function () {
 Route::prefix('bills')->group(function () {
     Route::get('/all', [BillController::class, 'index']);             // Lấy danh sách hóa đơn
     Route::get('/findId/{id}', [BillController::class, 'show']);      // Lấy chi tiết hóa đơn
+    Route::get('/billToday', [BillController::class, 'allBillToday']); // Lấy tổng tiền hôm nay
+    Route::get('/billYesterday', [BillController::class, 'allBillYesterday']); // Lấy tổng tiền hôm qua
+    Route::get('/revernue', [BillController::class, 'calculateHourlyRevenue']); // Lấy trung bình tiền trong 8h gần nhất
     Route::post('/create', [BillController::class, 'store']);        // Tạo mới hóa đơn
     Route::put('/update/{id}', [BillController::class, 'update']);    // Cập nhật thông tin hóa đơn
     Route::delete('/delete/{id}', [BillController::class, 'destroy']); // Xóa hóa đơn
@@ -84,4 +97,15 @@ Route::prefix('table-times')->group(function () {
     Route::post('/create', [TableTimeController::class, 'store']);        // Tạo mới thời gian bàn
     Route::put('/update/{id}', [TableTimeController::class, 'update']);    // Cập nhật thời gian bàn
     Route::delete('/delete/{id}', [TableTimeController::class, 'destroy']); // Xóa thời gian bàn
+    Route::get('/findTable/{id}', [TableTimeController::class, 'findByTable']); // Lấy danh sách bàn
+    Route::post('/pay/{id}', [TableTimeController::class, 'pay']);                    //Thanh toán tiền bàn hiện tại
+    Route::post('/updateStatus/{id}', [TableTimeController::class, 'updateTableStatus']); //Update status của table theo id
+});
+
+Route::prefix('staff')->group(function () {
+    Route::get('/all', [StaffController::class, 'index']);             // Lấy danh sách nhân viên
+    Route::get('/findId/{id}', [StaffController::class, 'show']);      // Lấy chi tiết nhân viên
+    Route::post('/create', [StaffController::class, 'store']);        // Tạo mới nhân viên
+    Route::put('/update/{id}', [StaffController::class, 'update']);    // Cập nhật nhân viên
+    Route::delete('/delete/{id}', [StaffController::class, 'destroy']); // Xóa nhân viên
 });

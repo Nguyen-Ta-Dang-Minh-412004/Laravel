@@ -47,4 +47,16 @@ class PlayerController extends Controller
         Player::destroy($id);
         return response()->json(['message' => 'Player deleted']);
     }
+
+    public function findByName($name)
+    {
+        $player = Player::where('name', 'LIKE', "%$name%")->get();
+        return response()->json($player);
+    }
+
+    public function getTotalPlayers()
+    {
+        $total = Player::count();
+        return response()->json(['total_players' => $total]);
+    }
 }

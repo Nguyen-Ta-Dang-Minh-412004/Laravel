@@ -24,6 +24,7 @@ class OrderItem extends Model
         'item_id',
         'quantity',
         'total_price',
+        'time',
     ];
 
     public function item()

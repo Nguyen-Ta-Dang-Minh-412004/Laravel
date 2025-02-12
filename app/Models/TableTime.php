@@ -24,11 +24,12 @@ class TableTime extends Model
         'table_id',
         'time_start',
         'time_end',
+        'date'
     ];
 
     public function staff()
     {
-        return $this->belongsTo(User::class, 'staff_id');
+        return $this->belongsTo(Staff::class, 'staff_id');
     }
 
     public function table()

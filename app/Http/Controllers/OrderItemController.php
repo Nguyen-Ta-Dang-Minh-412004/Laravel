@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderItem;
+use App\Models\Item;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class OrderItemController extends Controller
 {
@@ -18,11 +20,22 @@ class OrderItemController extends Controller
         $validated = $request->validate([
             'table_id' => 'required|exists:tables,id',
             'item_id' => 'required|exists:items,id',
-            'quantity' => 'nullable|integer',
-            'total_price' => 'nullable|integer',
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $orderItem = OrderItem::create($validated);
+        // Lấy giá sản phẩm
+        $item = Item::findOrFail($validated['item_id']);
+        $totalPrice = $item->price * $validated['quantity'];
+        $now = Carbon::now();
+
+        $orderItem = OrderItem::create([
+            'table_id' => $validated['table_id'],
+            'item_id' => $validated['item_id'],
+            'quantity' => $validated['quantity'],
+            'total_price' => $totalPrice,
+            'time' => $now
+        ]);
+
         return response()->json($orderItem);
     }
 
@@ -37,11 +50,18 @@ class OrderItemController extends Controller
         $validated = $request->validate([
             'table_id' => 'sometimes|required|exists:tables,id',
             'item_id' => 'sometimes|required|exists:items,id',
-            'quantity' => 'nullable|integer',
-            'total_price' => 'nullable|integer',
+            'quantity' => 'sometimes|required|integer|min:1',
         ]);
 
         $orderItem = OrderItem::findOrFail($id);
+
+        if (isset($validated['item_id'])) {
+            $item = Item::findOrFail($validated['item_id']);
+            $validated['total_price'] = $item->price * ($validated['quantity'] ?? $orderItem->quantity);
+        } elseif (isset($validated['quantity'])) {
+            $validated['total_price'] = $orderItem->item->price * $validated['quantity'];
+        }
+
         $orderItem->update($validated);
         return response()->json($orderItem);
     }

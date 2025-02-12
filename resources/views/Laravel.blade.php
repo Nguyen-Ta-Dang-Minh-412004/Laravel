@@ -322,6 +322,6 @@
         <button type="submit">Đặt đồ</button>
     </div>
 </div>
-<script src="../js/trangchu.js"></script>
+<script src="../js/Laravel.js"></script>
 </body>
 </html>

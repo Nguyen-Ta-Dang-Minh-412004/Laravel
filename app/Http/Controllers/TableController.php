@@ -17,12 +17,13 @@ class TableController extends Controller
     {
         $validated = $request->validate([
             'table_number' => 'required|integer',
-            'statust' => 'required|in:empty,booked,use,broken',
+            'status' => 'required|in:empty,booked,use,broken',
             'price' => 'nullable|integer',
             'area' => 'nullable|integer',
         ]);
 
         $table = Table::create($validated);
+        
         return response()->json($table);
     }
 
@@ -36,7 +37,7 @@ class TableController extends Controller
     {
         $validated = $request->validate([
             'table_number' => 'sometimes|required|integer',
-            'statust' => 'sometimes|required|in:empty,booked,use,broken',
+            'status' => 'sometimes|required|in:empty,booked,use,broken',
             'price' => 'nullable|integer',
             'area' => 'nullable|integer',
         ]);
@@ -52,9 +53,8 @@ class TableController extends Controller
         return response()->json(['message' => 'Table deleted']);
     }
 
-    public function findByArea($area_id) // Changed parameter to area_id for simplicity
+    public function findByArea($area_id)
     {
-        // Trả về các bàn thuộc khu vực
-        return Table::where('area_id', $area_id)->get(); // Using area_id directly
+        return response()->json(Table::where('area', $area_id)->get());
     }
 }

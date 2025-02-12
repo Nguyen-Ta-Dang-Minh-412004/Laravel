@@ -47,4 +47,16 @@ class ItemController extends Controller
         Item::destroy($id);
         return response()->json(['message' => 'Item deleted']);
     }
+
+    public function findFood()
+    {
+        $items = Item::whereBetween('id', [1, 5])->get();
+        return response()->json($items);
+    }
+
+    public function findDrink()
+    {
+        $items = Item::whereBetween('id', [6, 10])->get();
+        return response()->json($items);
+    }
 }

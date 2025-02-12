@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bill extends Model
+class Position extends Model
 {
     use HasFactory;
 
-    protected $table = 'bills';
+    protected $table = 'position'; 
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id'; 
 
     public $incrementing = true;
 
@@ -20,14 +20,7 @@ class Bill extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'staff_id',
-        'total_money',
-        'date_pay',
-        'time',
+        'type_salary',
+        'salary',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(Staff::class, 'staff_id');
-    }
 }
