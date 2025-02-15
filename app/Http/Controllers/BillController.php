@@ -10,7 +10,7 @@ class BillController extends Controller
 {
     public function index()
     {
-        $bills = Bill::with('user')->get();
+        $bills = Bill::with('staff')->get();
         return response()->json($bills);
     }
 
@@ -58,7 +58,7 @@ class BillController extends Controller
     {
         $today = Carbon::today();
         $total = Bill::whereDate('date_pay', $today)->sum('total_money');
-        return response()->json(['total_money_today' => $total]);
+        return response()->json($total);
     }
 
     // Tính tổng tiền hóa đơn ngày hôm qua
@@ -66,25 +66,43 @@ class BillController extends Controller
     {
         $yesterday = Carbon::yesterday();
         $total = Bill::whereDate('date_pay', $yesterday)->sum('total_money');
-        return response()->json(['total_money_yesterday' => $total]);
+        return response()->json($total);
     }
 
     // Tính doanh thu theo giờ trong vòng 8 giờ gần nhất
     public function calculateHourlyRevenue()
     {
         $now = Carbon::now();
-        $startTime = $now->copy()->subHours(8)->startOfHour(); // Lấy mốc 8 giờ trước
-        $endTime = $now->copy()->startOfHour(); // Lấy mốc giờ hiện tại
-    
-        $totalMoney = Bill::whereDate('time', Carbon::today()) // Chỉ lấy dữ liệu hôm nay
-            ->whereBetween('time', [$startTime, $endTime]) // Lọc trong khoảng 8 giờ gần nhất
-            ->sum('total_money');
-    
+        $hourlyRevenue = [];
+
+        for ($i = 7; $i >= 0; $i--) {
+            $startTime = $now->copy()->subHours($i + 1)->startOfHour(); // Bắt đầu của giờ
+            $endTime = $now->copy()->subHours($i)->startOfHour(); // Kết thúc của giờ
+
+            // Tính tổng doanh thu trong khoảng thời gian đó
+            $totalMoney = Bill::whereDate('time', Carbon::today())
+                ->whereBetween('time', [$startTime, $endTime])
+                ->sum('total_money');
+
+            // Thêm vào mảng
+            $hourlyRevenue[] = [
+                'hour' => $startTime->format('H:i') . ' - ' . $endTime->format('H:i'),
+                'revenue' => $totalMoney
+            ];
+        }
+
         return response()->json([
-            'start_time' => $startTime->format('Y-m-d H:i:s'),
-            'end_time' => $endTime->format('Y-m-d H:i:s'),
-            'revenue' => $totalMoney
+            'date' => Carbon::today()->format('Y-m-d'),
+            'hourly_revenue' => $hourlyRevenue
         ]);
+    } 
+    public function findByDate(Request $request)
+    {
+        $validated = $request->validate([
+            'date' => 'required|date',
+        ]);
+
+        $bills = Bill::whereDate('date_pay', $validated['date'])->with('staff')->get();
+        return response()->json($bills);
     }
-    
 }

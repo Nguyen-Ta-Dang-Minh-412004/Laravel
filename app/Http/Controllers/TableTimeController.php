@@ -19,14 +19,13 @@ class TableTimeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'staff_id'   => 'required|exists:users,id', // Đổi bảng staff thành users
-            'table_id'   => 'required|exists:table,id',
+            'staff_id'   => 'required|exists:staff,id', 
+            'table_id'   => 'required|exists:tables,id',
             'time_start' => 'required|date_format:H:i:s',
             'time_end'   => 'required|date_format:H:i:s|after:time_start', 
-            'date'       => 'required|date_format:Y-m-d', // Đảm bảo ngày hợp lệ
+            'date'       => 'required|date_format:Y-m-d',
         ]);
 
-        // Kiểm tra trùng lặp thời gian trên cùng bàn, cùng ngày
         $conflicts = TableTime::where('table_id', $validated['table_id'])
             ->where('date', $validated['date'])
             ->where(function ($query) use ($validated) {
@@ -49,7 +48,7 @@ class TableTimeController extends Controller
         $tableTime = TableTime::create($validated);
         $this->updateTableStatus($validated['table_id'], $validated['date']);
 
-        return response()->json($tableTime);
+        return response()->json($tableTime, 200);
     }
 
     public function show($id)
@@ -64,7 +63,7 @@ class TableTimeController extends Controller
 
         $validated = $request->validate([
             'staff_id'   => 'sometimes|required|exists:staff,id',
-            'table_id'   => 'sometimes|required|exists:table,id',
+            'table_id'   => 'sometimes|required|exists:tables,id',
             'time_start' => 'sometimes|required|date_format:H:i:s',
             'time_end'   => 'sometimes|required|date_format:H:i:s|after:time_start',
             'date'       => 'sometimes|required|date_format:Y-m-d',
@@ -108,72 +107,9 @@ class TableTimeController extends Controller
 
         $this->updateTableStatus($tableTime->table_id, $date);
 
-        return response()->json(['message' => 'TableTime deleted']);
-    }
-
-    public function updateTableStatus($table_id)
-    {
-        $currentTime = Carbon::now();
-        $table = Table::findOrFail($table_id);
-    
-        // Lấy danh sách thời gian đặt bàn theo thứ tự thời gian bắt đầu
-        $activeTimes = TableTime::where('table_id', $table_id)
-            ->orderBy('date')
-            ->orderBy('time_start')
-            ->get();
-    
-        // Nếu bàn bị hỏng thì giữ nguyên trạng thái
-        if ($table->status === 'broken') {
-            return response()->json(['message' => 'Table Broken']);
-        }
-    
-        $isUpdatedToUse = false;
-        $hasUpcomingBooking = false;
-    
-        foreach ($activeTimes as $time) {
-            // Chuyển đổi `date`, `time_start`, `time_end` thành Carbon để so sánh chính xác
-            $timeStart = Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_start}");
-            $timeEnd = $time->time_end
-                ? Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_end}")
-                : null;
-    
-            // Nếu `time_end` nhỏ hơn `time_start`, tức là qua ngày hôm sau -> cộng thêm 1 ngày
-            if ($timeEnd && $timeEnd->lessThan($timeStart)) {
-                $timeEnd->addDay();
-            }
-    
-            // Kiểm tra nếu bàn đang trong khoảng thời gian sử dụng
-            if (!$isUpdatedToUse && $currentTime->between($timeStart, $timeEnd)) {
-                $table->status = 'use';
-                $isUpdatedToUse = true;
-                return response()->json(['message' => 'Table use']);
-                $table->save();
-                break;
-            }
-    
-            // Kiểm tra nếu có lịch đặt trong tương lai
-            if ($currentTime->lessThan($timeStart)) {
-                $hasUpcomingBooking = true;
-            }
-        }
-    
-        if (!$isUpdatedToUse) {
-            if ($hasUpcomingBooking) {
-                $table->status = 'booked';
-                return response()->json(['message' => 'Table booked']);
-                $table->save();
-            } else {
-                $table->status = 'empty';
-                return response()->json(['message' => 'Table empty']);
-                $table->save();
-            }
-        }
-    
-        // Lưu trạng thái mới
-        $table->save();
+        return response()->json(['message' => 'TableTime deleted'], 204);
     }
     
-
     public function findByTable($id)
     {
         return TableTime::where('table_id', $id)->get();
@@ -214,10 +150,7 @@ class TableTimeController extends Controller
                 }
 
                 $totalPrice = $hours * $time->table->price;
-    
-                $time->table->status = 'empty';
-                $time->table->save();
-    
+        
                 $time->time_end = $localTime;
                 $time->save();
     
@@ -229,8 +162,76 @@ class TableTimeController extends Controller
                 ]);
             }
         }
-    
+        $this->updateTableStatus();
+
         return response()->json(['error' => 'Không tìm thấy bàn đang sử dụng.'], 400);
+    }
+    public function updateTableStatus($tableId = null, $date = null)
+    {
+        $currentTime = Carbon::now();
+        
+        if ($tableId) {
+            // Cập nhật cho một bàn cụ thể
+            $tables = Table::where('id', $tableId)->get();
+        } else {
+            // Cập nhật cho tất cả các bàn
+            $tables = Table::all();
+        }
+
+        foreach ($tables as $table) {
+            // Lấy danh sách thời gian đặt bàn theo thứ tự thời gian bắt đầu
+            $activeTimes = TableTime::where('table_id', $table->id)
+                ->when($date, function($query) use ($date) {
+                    return $query->where('date', $date);
+                })
+                ->orderBy('date')
+                ->orderBy('time_start')
+                ->get();
+
+            // Nếu bàn bị hỏng thì giữ nguyên trạng thái
+            if ($table->status === 'broken') {
+                continue; // Bỏ qua bàn này
+            }
+
+            $isUpdatedToUse = false;
+            $hasUpcomingBooking = false;
+
+            foreach ($activeTimes as $time) {
+                $timeStart = Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_start}");
+                $timeEnd = $time->time_end
+                    ? Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_end}")
+                    : null;
+
+                if ($timeEnd && $timeEnd->lessThan($timeStart)) {
+                    $timeEnd->addDay();
+                }
+
+                // Kiểm tra nếu bàn đang trong khoảng thời gian sử dụng
+                if (!$isUpdatedToUse && $currentTime->between($timeStart, $timeEnd)) {
+                    $table->status = 'use';
+                    $isUpdatedToUse = true;
+                    break; // Thoát khỏi vòng lặp khi đã cập nhật trạng thái
+                }
+
+                // Kiểm tra nếu có lịch đặt trong tương lai
+                if ($currentTime->lessThan($timeStart)) {
+                    $hasUpcomingBooking = true;
+                }
+            }
+
+            if (!$isUpdatedToUse) {
+                if ($hasUpcomingBooking) {
+                    $table->status = 'booked';
+                } else {
+                    $table->status = 'empty';
+                }
+            }
+
+            // Lưu trạng thái mới
+            $table->save();
+        }
+
+        return response()->json(['message' => 'Table statuses updated']);
     }
     
     

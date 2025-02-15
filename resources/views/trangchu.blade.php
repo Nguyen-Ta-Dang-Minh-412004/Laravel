@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ</title>
-    <link rel="stylesheet" href="css/Laravel.css">
+    <link rel="stylesheet" href="../css/trangchu.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link rel="stylesheet" href="{{ asset('../fontawesome/fontawesome-free-6.5.2-web/css/all.css') }}">
+    <link rel="stylesheet" href="../fontawesome/fontawesome-free-6.5.2-web/css/all.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
@@ -314,7 +314,7 @@
                 <div class="item">
                     <label for="nhan-vien">Nhân viên:</label>
                     <select id="nhan-vien" disabled>
-                        <option value="nv1">Minh</option>
+                        <option value="nv1">hoangw-chan</option>
                     </select>
                 </div>
             </div>
@@ -322,6 +322,6 @@
         <button type="submit">Đặt đồ</button>
     </div>
 </div>
-<script src="../js/Laravel.js"></script>
+<script src="../js/trangchu.js"></script>
 </body>
 </html>

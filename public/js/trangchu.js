@@ -8,9 +8,37 @@ function updateRole() {
     }
 }
 
+const BASE_URL = 'http://127.0.0.1:8000'; // Địa chỉ cơ sở của API
+const FETCH_TABLES_BY_AREA_API = `${BASE_URL}/api/tables/findByArea/{area_id}`;
+const RESET_TABLE_STATUS_API = `${BASE_URL}/api/table-times/updateStatus`;
+const LOAD_FOOD_OPTIONS_API = `${BASE_URL}/api/items/findFood`;
+const LOAD_DRINK_OPTIONS_API = `${BASE_URL}/api/items/findDrink`;
+const CREATE_ORDER_ITEM_API = `${BASE_URL}/api/order-items/create`;
+const TABLE_TIMES_API = `${BASE_URL}/api/table-times/create`; 
+
+// Khai báo các biến API cho các hàm fetch
+const apiEndpoints = {
+    fetchTablesByArea: (area) => `${FETCH_TABLES_BY_AREA_API.replace('{area_id}', area)}`,
+    resetTableStatus: RESET_TABLE_STATUS_API,
+    loadFoodOptions: LOAD_FOOD_OPTIONS_API,
+    loadDrinkOptions: LOAD_DRINK_OPTIONS_API,
+    createOrderItem: CREATE_ORDER_ITEM_API,
+};
+
 // Gọi API để lấy danh sách bàn theo khu vực
 function fetchTablesByArea(area) {
-    fetch(`http://127.0.0.1/tables/findByArea/{area_id}`)
+    area_id = 0;
+
+    if(area === 'normal'){
+        area_id = 0;
+    }
+    else if(area === 'smoke'){
+        area_id = 1;
+    }
+    else{
+        area_id = 2;
+    }
+    fetch(`http://127.0.0.1:8000/api/tables/findByArea/${area_id}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -19,20 +47,21 @@ function fetchTablesByArea(area) {
         })
         .then(data => {
             console.log(data);
-            displayTables(data, area); // Gọi hàm để hiển thị bàn
+            displayTables(data, area); 
         })
         .catch(error => {
             console.error('Lỗi khi gọi API:', error);
         });
 }
+
 window.onload = function() {
     resetTableStatus(); // Gọi hàm reset khi trang được load
 };
 
 // Hàm để gọi API reset
 function resetTableStatus() {
-    fetch('http://127.0.0.1/table-times/reset', {
-        method: 'PATCH', // Sử dụng phương thức PATCH để gọi API
+    fetch(apiEndpoints.resetTableStatus, {
+        method: 'POST', // Sử dụng phương thức PATCH để gọi API
     })
         .then(response => {
             if (!response.ok) {
@@ -48,7 +77,7 @@ function resetTableStatus() {
 // Hàm hiển thị các bàn
 function displayTables(tables, area) {
     // Tìm phần tử tương ứng với khu vực
-    const grid = document.querySelector(`#${area}-grid`); // Sử dụng id của grid tương ứng với khu vực
+    const grid = document.querySelector(`#${area}-grid`); 
     grid.innerHTML = ''; // Xóa nội dung hiện tại
 
     tables.forEach(table => {
@@ -61,9 +90,24 @@ function displayTables(tables, area) {
 document.querySelectorAll('.content aside ul li').forEach(li => {
     li.addEventListener('click', () => {
         const area = li.getAttribute('data-area');
-        fetchTablesByArea(area); // Gọi API khi nhấp vào từng khu vực
+        console.log(area);
+
+        // Ẩn tất cả các khu vực
+        document.querySelectorAll('.article-content').forEach(content => {
+            content.style.display = 'none';
+        });
+
+        // Hiển thị khu vực được chọn
+        const selectedContent = document.getElementById(`content-${area}`);
+        if (selectedContent) {
+            selectedContent.style.display = 'block';
+        }
+
+        // Gọi API lấy dữ liệu bàn
+        fetchTablesByArea(area);
     });
 });
+
 
 window.addEventListener('load', () => {
     showContent('content-normal'); // Hiển thị nội dung mặc định khi tải trang
@@ -102,17 +146,16 @@ function createTableItem(table, area) {
 
     // Thêm nội dung cho tableItem
     tableItem.innerHTML = `
-        <a href="#" data-name="Bàn ${table.tableNumber}" data-room="${table.roomType}">
-            <img src="../img/billiard-table.svg" alt="Bàn ${table.tableNumber}">
+        <a href="#" data-name="Bàn ${table.table_number}" data-room="${table.roomType}">
+            <img src="../img/billiard-table.svg" alt="Bàn ${table.table_number}">
         </a>
-        <p class="p1">Bàn ${table.tableNumber}</p>
+        <p class="p1">Bàn ${table.table_number}</p>
         <p class="status">Trạng thái: ${table.status}</p> <!-- Sử dụng trực tiếp table.status -->
     `;
 
     // Thêm sự kiện click cho table-item
     tableItem.addEventListener('click', () => {
-        // Sử dụng trực tiếp table.status thay vì table_status
-        showTablePopup(`${table.tableNumber}`, table.tableNumber, area, table.status);
+        showTablePopup(`${table.table_number}`, table.table_number, area, table.status);
     });
 
     return tableItem; // Trả về tableItem đã tạo
@@ -215,40 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-//
-// document.getElementById('closePopup').addEventListener('click', function() {
-//     // Ẩn popup thanh toán
-//     document.getElementById('paymentPopup').style.display = 'none';
-// });
-//
-// document.getElementById('confirmPayment').addEventListener('click', function() {
-//     const tableId = document.getElementById('tableId').textContent;
-//
-//     // Thực hiện gọi API thanh toán
-//     fetch(`http://localhost:8080/pay/${tableId}`, {
-//         method: 'POST',
-//     })
-//         .then(response => response.json()) // Chuyển đổi kết quả trả về thành JSON
-//         .then(data => {
-//             // Xử lý kết quả trả về từ API
-//             console.log('Thanh toán thành công, số tiền:', data);
-//
-//             // Cập nhật giao diện sau khi thanh toán thành công
-//             alert(`Thanh toán thành công! Tổng số tiền: ${data} VND`);
-//
-//             // Ẩn popup và reset trạng thái bàn
-//             document.getElementById('paymentPopup').style.display = 'none';
-//
-//             // Cập nhật lại trạng thái bàn (ví dụ: 'empty')
-//             updateTableStatus(tableId, 'empty');
-//         })
-//         .catch(error => {
-//             console.error('Có lỗi xảy ra khi thanh toán:', error);
-//             alert('Thanh toán thất bại! Vui lòng thử lại.');
-//         });
-// });
-
-
 // Hàm hiển thị popup đặt bàn
 function showDatBanPopup(table_id) {
     const datBanPopup = document.getElementById('dat-ban-popup');
@@ -267,57 +276,80 @@ function showDatBanPopup(table_id) {
     addInfoButton.onclick = null;
 
     // Thêm sự kiện click cho nút "Thêm thông tin"
-    addInfoButton.onclick = function() {
-        // Lấy thông tin từ các input
-        const tenKhachHang = document.getElementById('ten-khach-hang').value;
-        const thoiGianBatDau = document.getElementById('thoi-gian-bat-dau').value;  // Đây là input[type="time"]
-        const thoiLuong = document.getElementById('thoi-luong').value;
-
-        // Kiểm tra giá trị thoiGianBatDau và thoiLuong có hợp lệ hay không
-        if (!thoiGianBatDau || !thoiLuong) {
-            alert("Vui lòng nhập đầy đủ thông tin thời gian bắt đầu và thời lượng.");
+    addInfoButton.onclick = function () {
+        const tenKhachHang = document.getElementById("ten-khach-hang").value;
+        let thoiGianBatDau = document.getElementById("thoi-gian-bat-dau").value;
+        const thoiLuong = document.getElementById("thoi-luong").value;
+    
+        if (!thoiGianBatDau || !thoiLuong || isNaN(thoiLuong) || thoiLuong <= 0) {
+            alert("Vui lòng nhập đầy đủ và chính xác thông tin thời gian.");
             return;
         }
-
-        // Tính thời gian kết thúc
-        const time_end = calculateEndTime(thoiGianBatDau, thoiLuong);
-
-        // Tạo đối tượng request
+    
+        if (typeof table_id === "undefined") {
+            alert("Lỗi: Không xác định được bàn.");
+            return;
+        }
+    
+        let time_end;
+        try {
+            time_end = calculateEndTime(thoiGianBatDau, thoiLuong);
+        } catch (error) {
+            console.error("Lỗi khi tính toán thời gian kết thúc:", error);
+            alert("Có lỗi xảy ra khi tính toán thời gian kết thúc.");
+            return;
+        }
+    
+        thoiGianBatDau = thoiGianBatDau + ":00"; 
+        time_end = time_end + ":00"; 
+    
+        // Ngày hôm nay
+        const today = new Date().toISOString().split("T")[0];
+    
         const tableTimeRequest = {
+            staff_id: 2,  // Đặt cứng ID nhân viên (hoặc có thể lấy từ dữ liệu đăng nhập)
             table_id: table_id,
-            staff_id:1,
             time_start: thoiGianBatDau,
             time_end: time_end,
+            date: today
         };
-
-        console.log(tableTimeRequest); // Kiểm tra dữ liệu trước khi gửi
-
-        // Gửi yêu cầu PUT đến API
-        fetch('http://localhost:8080/table-times/', {
-            method: 'PUT',
+    
+        console.log("Đang gửi request:", tableTimeRequest);
+    
+        fetch(TABLE_TIMES_API, {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(tableTimeRequest),
         })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Đặt bàn thất bại');
+            .then((response) => {
+                console.log("Phản hồi từ server:", response);
+    
+                // Kiểm tra nếu phản hồi không chứa JSON
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    return response.text().then(text => {
+                        console.error("Phản hồi không phải JSON:", text);
+                        throw new Error("Phản hồi từ server không hợp lệ.");
+                    });
                 }
+    
+                return response.json();
             })
-            .then(data => {
-                alert('Đặt bàn thành công!');
-                datBanPopup.style.display = 'none'; // Ẩn popup sau khi hoàn tất
+            .then((data) => {
+                alert("Đặt bàn thành công!");
+                console.log("Phản hồi JSON từ server:", data);
+                datBanPopup.style.display = "none"; 
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Thời gian bị trùng!');
+            .catch((error) => {
+                console.error("Lỗi:", error);
+                alert("Lỗi: " + error.message);
             });
     };
-}
+    
 
+}
 // Hàm tính thời gian kết thúc dựa trên thời gian bắt đầu và thời lượng
 function calculateEndTime(startTime, durationInHours) {
     // startTime được trả về từ input[type="time"] với định dạng HH:MM
@@ -339,10 +371,6 @@ function calculateEndTime(startTime, durationInHours) {
     // Trả về thời gian kết thúc dưới dạng HH:MM (chỉ lấy phần giờ và phút)
     return endTime.toTimeString().slice(0, 5);
 }
-
-
-
-
 
 function closeDatBanPopup() {
     const datBanPopup = document.getElementById('dat-ban-popup');
@@ -396,7 +424,7 @@ document.getElementById('room-select').addEventListener('change', function() {
     // Kiểm tra xem phòng có được chọn hay chưa
     if (room) {
         // Gửi yêu cầu GET tới API findArea
-        fetch(`http://:8080/tables/findArea/${room}`)
+        fetch(apiEndpoints.fetchTablesByArea(room))
             .then(response => response.json())
             .then(data => {
                 // Làm rỗng phần tử table-select trước khi thêm bàn mới
@@ -418,7 +446,7 @@ document.getElementById('room-select').addEventListener('change', function() {
 });
 // Gọi API để lấy danh sách món ăn
 function loadFoodOptions() {
-    fetch('http://localhost:8080/items/findFood')
+    fetch(apiEndpoints.loadFoodOptions)
         .then(response => response.json())
         .then(data => {
             const foodSelect = document.getElementById('mon-an');
@@ -437,7 +465,7 @@ function loadFoodOptions() {
 
 // Gọi API để lấy danh sách đồ uống
 function loadDrinkOptions() {
-    fetch('http://localhost:8080/items/findDrink')
+    fetch(apiEndpoints.loadDrinkOptions)
         .then(response => response.json())
         .then(data => {
             const drinkSelect = document.getElementById('thuc-uong');
@@ -460,93 +488,96 @@ document.addEventListener('DOMContentLoaded', function () {
     loadDrinkOptions(); // Gọi khi trang được tải
 });
 document.querySelector('.order-modal button[type="submit"]').addEventListener('click', function() {
-    const tableId = document.getElementById('table-select').value; // ID bàn
-    const foodItemId = document.getElementById('mon-an').value; // ID món ăn
-    const foodQuantity = document.getElementById('so-luong-mon').value; // Số lượng món ăn
-    const drinkItemId = document.getElementById('thuc-uong').value; // ID đồ uống
-    const drinkQuantity = document.getElementById('so-luong-thuc-uong').value; // Số lượng đồ uống
+    const tableId = document.getElementById('table-select').value; 
+    const foodItemId = document.getElementById('mon-an').value; 
+    let foodQuantity = document.getElementById('so-luong-mon').value;
+    const drinkItemId = document.getElementById('thuc-uong').value; 
+    let drinkQuantity = document.getElementById('so-luong-thuc-uong').value; 
 
-    // Tạo đối tượng request cho món ăn
-    const foodOrderItem = {
-        table_id: tableId,
-        item: foodItemId,
-        quantity: foodQuantity,
-    };
+    // Chuyển số lượng sang kiểu số
+    foodQuantity = foodQuantity ? parseInt(foodQuantity, 10) : 0;
+    drinkQuantity = drinkQuantity ? parseInt(drinkQuantity, 10) : 0;
 
-    // Tạo đối tượng request cho đồ uống
-    const drinkOrderItem = {
-        table_id: tableId,
-        item: drinkItemId,
-        quantity: drinkQuantity,
-    };
+    // Kiểm tra nếu không có bàn hoặc không có món nào được chọn
+    if (!tableId) {
+        alert("Vui lòng chọn bàn.");
+        return;
+    }
 
-    console.log('Food Order Item:', foodOrderItem);
-    console.log('Drink Order Item:', drinkOrderItem);
+    if ((!foodItemId || foodQuantity <= 0) && (!drinkItemId || drinkQuantity <= 0)) {
+        alert("Vui lòng chọn ít nhất một món ăn hoặc thức uống với số lượng hợp lệ.");
+        return;
+    }
 
-    let totalPrice = 0; // Biến để lưu tổng tiền
-
-    // Tạo mảng các promise để xử lý yêu cầu
+    let totalPrice = 0;
+    let successCount = 0; // Đếm số đơn hàng thành công
     const promises = [];
 
-    // Gửi yêu cầu tạo món ăn nếu có chọn món ăn
-    if (foodItemId) {
-        const foodOrderPromise = fetch('http://localhost:8080/order_items/create', {
+    // Gửi yêu cầu đặt món ăn nếu có chọn
+    if (foodItemId && foodQuantity > 0) {
+        const foodOrderItem = {
+            table_id: parseInt(tableId, 10),
+            item_id: parseInt(foodItemId, 10),
+            quantity: foodQuantity,
+        };
+
+        const foodOrderPromise = fetch(apiEndpoints.createOrderItem, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(foodOrderItem),
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(foodData => {
-                console.log('Food response:', foodData);
-                totalPrice += foodData.totalPrice; // Cộng giá trị vào tổng tiền
-            })
-            .catch(error => {
-                console.error('Error creating food order:', error);
-            });
+        .then(response => {
+            if (!response.ok) throw new Error("Lỗi khi đặt món ăn.");
+            return response.json();
+        })
+        .then(foodData => {
+            console.log('Food response:', foodData);
+            if (foodData.total_price) totalPrice += foodData.total_price;
+            successCount++; // Tăng số lượng đơn thành công
+        })
+        .catch(error => console.error('Lỗi khi đặt món ăn:', error));
 
-        promises.push(foodOrderPromise); // Thêm promise vào mảng
+        promises.push(foodOrderPromise);
     }
 
-    // Gửi yêu cầu tạo đồ uống nếu có chọn đồ uống
-    if (drinkItemId) {
-        const drinkOrderPromise = fetch('http://localhost:8080/order_items/create', {
+    // Gửi yêu cầu đặt thức uống nếu có chọn
+    if (drinkItemId && drinkQuantity > 0) {
+        const drinkOrderItem = {
+            table_id: parseInt(tableId, 10),
+            item_id: parseInt(drinkItemId, 10),
+            quantity: drinkQuantity,
+        };
+
+        const drinkOrderPromise = fetch(apiEndpoints.createOrderItem, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(drinkOrderItem),
         })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(drinkData => {
-                console.log('Drink response:', drinkData);
-                totalPrice += drinkData.totalPrice; // Cộng giá trị vào tổng tiền
-            })
-            .catch(error => {
-                console.error('Error creating drink order:', error);
-            });
+        .then(response => {
+            if (!response.ok) throw new Error("Lỗi khi đặt thức uống.");
+            return response.json();
+        })
+        .then(drinkData => {
+            console.log('Drink response:', drinkData);
+            if (drinkData.total_price) totalPrice += drinkData.total_price;
+            successCount++; // Tăng số lượng đơn thành công
+        })
+        .catch(error => console.error('Lỗi khi đặt thức uống:', error));
 
-        promises.push(drinkOrderPromise); // Thêm promise vào mảng
+        promises.push(drinkOrderPromise);
     }
 
-    // Chờ cho cả hai yêu cầu (nếu có) hoàn thành
-    Promise.all(promises).then(() => {
-        // Hiển thị tổng giá trị đơn hàng
+    // Chờ tất cả các yêu cầu hoàn thành
+    Promise.allSettled(promises).then(() => {
         if (totalPrice > 0) {
-            alert(`Tổng giá trị đơn hàng là: ${totalPrice}`);
+            alert(`Tổng giá trị đơn hàng: ${totalPrice} VNĐ`);
+            if (successCount > 0) {
+                document.querySelector('.order-modal').style.display = 'none'; // Ẩn popup
+            }
         } else {
-            alert('Không có món nào được đặt!');
+            alert("Không có món nào được đặt!");
         }
     });
 });
+
+

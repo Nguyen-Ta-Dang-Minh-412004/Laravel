@@ -64,6 +64,8 @@ Route::prefix('orders')->group(function () {
 Route::prefix('items')->group(function () {
     Route::get('/all', [ItemController::class, 'index']);             // Lấy danh sách món ăn
     Route::get('/findId/{id}', [ItemController::class, 'show']);      // Lấy chi tiết món ăn
+    Route::get('/findFood', [ItemController::class, 'findFood']);      // Lấy chi tiết món ăn
+    Route::get('/findDrink', [ItemController::class, 'findDrink']);      // Lấy chi tiết đò uống
     Route::post('/create', [ItemController::class, 'store']);        // Tạo mới món ăn
     Route::put('/update/{id}', [ItemController::class, 'update']);    // Cập nhật thông tin món ăn
     Route::delete('/delete/{id}', [ItemController::class, 'destroy']); // Xóa món ăn
@@ -79,6 +81,7 @@ Route::prefix('bills')->group(function () {
     Route::post('/create', [BillController::class, 'store']);        // Tạo mới hóa đơn
     Route::put('/update/{id}', [BillController::class, 'update']);    // Cập nhật thông tin hóa đơn
     Route::delete('/delete/{id}', [BillController::class, 'destroy']); // Xóa hóa đơn
+    Route::get('/findByDate', [BillController::class, 'findByDate']); // Tìm hóa đơn theo ngày
 });
 
 // API Routes cho order_items
@@ -99,7 +102,7 @@ Route::prefix('table-times')->group(function () {
     Route::delete('/delete/{id}', [TableTimeController::class, 'destroy']); // Xóa thời gian bàn
     Route::get('/findTable/{id}', [TableTimeController::class, 'findByTable']); // Lấy danh sách bàn
     Route::post('/pay/{id}', [TableTimeController::class, 'pay']);                    //Thanh toán tiền bàn hiện tại
-    Route::post('/updateStatus/{id}', [TableTimeController::class, 'updateTableStatus']); //Update status của table theo id
+    Route::post('/updateStatus', [TableTimeController::class, 'updateTableStatus']); //Update status của table theo id
 });
 
 Route::prefix('staff')->group(function () {

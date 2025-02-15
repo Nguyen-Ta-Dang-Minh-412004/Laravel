@@ -26,7 +26,7 @@ class Bill extends Model
         'time',
     ];
 
-    public function user()
+    public function staff()
     {
         return $this->belongsTo(Staff::class, 'staff_id');
     }
