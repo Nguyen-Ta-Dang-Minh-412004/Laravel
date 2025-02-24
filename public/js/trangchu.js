@@ -15,7 +15,12 @@ const LOAD_FOOD_OPTIONS_API = `${BASE_URL}/api/items/findFood`;
 const LOAD_DRINK_OPTIONS_API = `${BASE_URL}/api/items/findDrink`;
 const CREATE_ORDER_ITEM_API = `${BASE_URL}/api/order-items/create`;
 const TABLE_TIMES_API = `${BASE_URL}/api/table-times/create`; 
+const DoanhThuApi = `${BASE_URL}/doanhthu`
 
+document.querySelector(".BaoCao").addEventListener('click',(event) =>{
+    event.preventDefault();
+    window.location.href = DoanhThuApi;
+});
 // Khai báo các biến API cho các hàm fetch
 const apiEndpoints = {
     fetchTablesByArea: (area) => `${FETCH_TABLES_BY_AREA_API.replace('{area_id}', area)}`,
@@ -85,7 +90,6 @@ function displayTables(tables, area) {
         grid.appendChild(tableItem); // Thêm bàn vào grid
     });
 }
-
 // Thêm sự kiện click cho các mục trong aside
 document.querySelectorAll('.content aside ul li').forEach(li => {
     li.addEventListener('click', () => {

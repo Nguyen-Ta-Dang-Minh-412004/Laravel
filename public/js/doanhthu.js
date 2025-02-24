@@ -6,6 +6,10 @@ function loadData() {
     const FETCH_MONEY_YESTERDAY_API = `${BASE_URL}/api/bills/billYesterday`;
     const FETCH_MONEY_BY_HOUR_API = `${BASE_URL}/api/bills/revernue`;
 
+    document.querySelector(".TrangChu").addEventListener('click',(event) =>{
+        event.preventDefault();
+        window.location.href = BASE_URL;
+    });
     // Gọi API lấy số đơn theo ngày hôm nay
     const today = new Date().toISOString().split("T")[0]; // Lấy ngày hôm nay
     fetch(`${FETCH_ORDER_COUNT_API}?date=${today}`) // Thêm tham số ngày vào API

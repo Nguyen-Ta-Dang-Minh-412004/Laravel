@@ -100,9 +100,9 @@
                     </a>
                 </div>
                 <div class="view">
-                    <a href="../html/doanhthu.html">
+                    <a href="" >
                         <i class="fa-regular fa-clipboard"></i>
-                        <p>Báo cáo</p>
+                        <p class = "BaoCao">Báo cáo</p>
                     </a>
                 </div>
             </div>
@@ -237,7 +237,7 @@
             <div class="dat-ban-right">
                 <div class="nhanvien son">
                     <p>Tên nhân viên: </p>
-                    <input type="text" id="ten-nhan-vien" placeholder="Hoang-chan" disabled>
+                    <input type="text" id="ten-nhan-vien" placeholder="minh-chan" disabled>
                 </div>
                 <div class="room-table son">
                     <p>Phòng bàn: </p>

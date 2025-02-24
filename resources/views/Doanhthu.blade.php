@@ -90,7 +90,7 @@
                 </a>
             </div>
             <div class="view">
-                <a href="../html/trangchu.html">
+                <a href="" class = "TrangChu">
                     <i class="fa-solid fa-table"></i>
                     <p>Phòng bàn</p>
                 </a>
@@ -194,42 +194,42 @@
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p> Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p>Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p>Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p>Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p>Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
         <div class="active">
             <div class="sell"><i class="fa-solid fa-bell-concierge"></i></div>
             <div class="make">
-                <p>Hoàng - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
+                <p>Minh - Phạt tiền <span>vừa</span> đánh khách hàng <span>bằng gậy</span> <span class="price"> phạt 164,000</span>
                     <span class="time">an hour ago</span>
             </div>
         </div>
