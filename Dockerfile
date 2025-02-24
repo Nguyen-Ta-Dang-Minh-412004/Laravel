@@ -17,8 +17,8 @@ RUN apt-get update && apt-get install -y \
 # Cài đặt Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Đặt thư mục làm việc
-WORKDIR /var/www/Web_Netflix
+# Đặt thư mục làm vc
+WORKDIR /var/www/Laravel
 
 # Sao chép toàn bộ project Laravel vào container
 COPY . .
@@ -42,6 +42,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN php artisan storage:link || true
 RUN php artisan key:generate
 RUN php artisan migrate --force || true
+
 
 # Mở cổng 80
 EXPOSE 80
