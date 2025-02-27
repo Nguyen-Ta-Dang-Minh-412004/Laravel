@@ -8,7 +8,7 @@ function updateRole() {
     }
 }
 
-const BASE_URL = 'http://127.0.0.1:8000'; // Địa chỉ cơ sở của API
+const BASE_URL = 'https://laravel-kk8s.onrender.com'; // Địa chỉ cơ sở của API
 const FETCH_TABLES_BY_AREA_API = `${BASE_URL}/api/tables/findByArea/{area_id}`;
 const RESET_TABLE_STATUS_API = `${BASE_URL}/api/table-times/updateStatus`;
 const LOAD_FOOD_OPTIONS_API = `${BASE_URL}/api/items/findFood`;
@@ -46,7 +46,7 @@ function fetchTablesByArea(area) {
     else{
         area_id = 2;
     }
-    fetch(`http://127.0.0.1:8000/api/tables/findByArea/${area_id}`)
+    fetch(`https://laravel-kk8s.onrender.com/api/tables/findByArea/${area_id}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
