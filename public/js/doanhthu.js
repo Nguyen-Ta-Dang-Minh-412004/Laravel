@@ -1,10 +1,11 @@
 // Định nghĩa một hàm để gọi tất cả các API
 function loadData() {
-    const BASE_URL = 'https://laravel-kk8s.onrender.com'; 
+    const BASE_URL = 'http://127.0.0.1:8000'; 
     const FETCH_ORDER_COUNT_API = `${BASE_URL}/api/bills/findByDate`;
     const FETCH_MONEY_TODAY_API = `${BASE_URL}/api/bills/billToday`;
     const FETCH_MONEY_YESTERDAY_API = `${BASE_URL}/api/bills/billYesterday`;
     const FETCH_MONEY_BY_HOUR_API = `${BASE_URL}/api/bills/revernue`;
+    const TrangChuApi = `${BASE_URL}/`;
 
     document.querySelector(".TrangChu").addEventListener('click',(event) =>{
         event.preventDefault();
@@ -103,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    fetch("https://laravel-kk8s.onrender.com/api/bills/revernue")
+    fetch("http://127.0.0.1:8000/api/bills/revernue")
         .then((response) => response.json())
         .then((data) => {
             console.log("Dữ liệu từ API:", data);

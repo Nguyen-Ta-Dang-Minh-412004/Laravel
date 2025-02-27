@@ -114,58 +114,6 @@ class TableTimeController extends Controller
     {
         return TableTime::where('table_id', $id)->get();
     }
-    public function pay($id)
-    {
-        $localTime = Carbon::now();
-    
-        // Lấy danh sách thời gian của bàn
-        $times = TableTime::with('table')->where('table_id', $id)->get();
-    
-        if ($times->isEmpty()) {
-            return response()->json(['error' => 'Không tìm thấy dữ liệu thời gian cho bàn này.'], 404);
-        }
-    
-        foreach ($times as $time) {
-            if (!$time->table) {
-                continue;
-            }
-    
-            // Chuyển đổi `date`, `time_start`, `time_end` thành Carbon có đầy đủ ngày giờ
-            $timeStart = Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_start}");
-            $timeEnd = $time->time_end ? Carbon::createFromFormat('Y-m-d H:i:s', "{$time->date} {$time->time_end}") : $localTime;
-    
-            // Nếu `time_end` nhỏ hơn `time_start`, tức là qua ngày hôm sau -> cộng thêm 1 ngày
-            if ($timeEnd->lessThan($timeStart)) {
-                $timeEnd->addDay();
-            }
-    
-            if ($time->table->status === 'use') {
-                $totalMinutes = $timeStart->diffInMinutes($localTime);
-    
-                $hours = floor($totalMinutes / 60);
-                $remainingMinutes = $totalMinutes % 60;
-    
-                if ($remainingMinutes >= 30) {
-                    $hours += 1;
-                }
-
-                $totalPrice = $hours * $time->table->price;
-        
-                $time->time_end = $localTime;
-                $time->save();
-    
-                return response()->json([
-                    'message' => 'Thanh toán thành công.',
-                    'time_used' => "{$totalMinutes} phút (~ {$hours} giờ)",
-                    'total_price' => round($totalPrice, 2),
-                    'status' => $time->table->status
-                ]);
-            }
-        }
-        $this->updateTableStatus();
-
-        return response()->json(['error' => 'Không tìm thấy bàn đang sử dụng.'], 400);
-    }
     public function updateTableStatus($tableId = null, $date = null)
     {
         $currentTime = Carbon::now();
@@ -233,6 +181,102 @@ class TableTimeController extends Controller
 
         return response()->json(['message' => 'Table statuses updated']);
     }
+    public function pay($id)
+    {
+        $localTime = Carbon::now();
     
+        // Lấy danh sách thời gian của bàn theo thứ tự gần hiện tại nhất
+        $tableTimes = TableTime::where('table_id', $id)
+            ->whereHas('table', function ($query) {
+                $query->where('status', 'use');
+            })
+            ->orderBy('time_start', 'desc')
+            ->get();
     
+        // Kiểm tra nếu không có dữ liệu
+        if ($tableTimes->isEmpty()) {
+            return response()->json(['error' => 'Không tìm thấy bàn đang sử dụng.'], 400);
+        }
+    
+        $activeTime = null;
+    
+        // Duyệt danh sách TableTime để tìm bản ghi hợp lệ
+        foreach ($tableTimes as $time) {
+            $timeStart = Carbon::parse("{$time->date} {$time->time_start}");
+            $timeEnd = $time->time_end ? Carbon::parse("{$time->date} {$time->time_end}") : $localTime;
+    
+            // Nếu time_end nhỏ hơn time_start (qua ngày hôm sau), cộng thêm 1 ngày
+            if ($timeEnd->lessThan($timeStart)) {
+                $timeEnd->addDay();
+            }
+    
+            if ($timeStart->lessThanOrEqualTo($localTime) && $timeEnd->greaterThanOrEqualTo($localTime)) {
+                $activeTime = $time;
+                break; // Dừng khi tìm thấy bản ghi đúng
+            }
+        }
+    
+        // Nếu không tìm thấy thời gian hợp lệ
+        if (!$activeTime) {
+            return response()->json(['error' => 'Không tìm thấy bàn đang sử dụng.'], 400);
+        }
+    
+        // Tính thời gian sử dụng
+        $timeStart = Carbon::parse("{$activeTime->date} {$activeTime->time_start}");
+        $totalMinutes = $timeStart->diffInMinutes($localTime);
+    
+        // Làm tròn thành giờ
+        $hours = ($totalMinutes / 60);
+        if ($totalMinutes % 60 >= 30) {
+            $hours += 1;
+        }
+    
+        // Tính tiền
+        $table = $activeTime->table;
+        $pricePerHour = $table->price;
+        $totalPrice = $hours * $pricePerHour;
+    
+        // Cập nhật trạng thái bàn và thời gian kết thúc
+        $activeTime->time_end = $localTime;
+    
+        // Lưu vào database
+        $table->save();
+        $activeTime->save();
+        $this->updateTableStatus($id);
+
+        return response()->json([
+            'message' => 'Thanh toán thành công.',
+            'time_used' => $totalMinutes,
+            'total_price' => round($totalPrice, 2),
+        ]);
+    }
+
+    public function resetTableTime()
+    {
+        $today = Carbon::today()->toDateString();
+        $tableTimes = TableTime::all();
+    
+        foreach ($tableTimes as $time) {
+            $conflictingTime = TableTime::where('table_id', $time->table_id)
+                ->where('id', '!=', $time->id)
+                ->where('date', $today)
+                ->where(function ($query) use ($time) {
+                    $query->whereBetween('time_start', [$time->time_start, $time->time_end])
+                          ->orWhereBetween('time_end', [$time->time_start, $time->time_end])
+                          ->orWhere(function ($q) use ($time) {
+                              $q->where('time_start', '<', $time->time_start)
+                                ->where('time_end', '>', $time->time_end);
+                          });
+                })->first();
+    
+            if ($conflictingTime) {
+                $time->delete();
+            } else {
+                $time->date = $today;
+                $time->save();
+            }
+        }
+    
+        return response()->json(['message' => 'Reset TableTime successfully']);
+    }
 }

@@ -103,6 +103,7 @@ Route::prefix('table-times')->group(function () {
     Route::get('/findTable/{id}', [TableTimeController::class, 'findByTable']); // Lấy danh sách bàn
     Route::post('/pay/{id}', [TableTimeController::class, 'pay']);                    //Thanh toán tiền bàn hiện tại
     Route::post('/updateStatus', [TableTimeController::class, 'updateTableStatus']); //Update status của table theo id
+    Route::post('/resetTable', [TableTimeController::class, 'resetTableTime']); //Update status của table theo id
 });
 
 Route::prefix('staff')->group(function () {

@@ -1,35 +1,76 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Staff;
+use Illuminate\Http\Request;
 
-class Staff extends Model
+class StaffController extends Controller
 {
-    use HasFactory;
-
-    protected $table = 'staff'; // Tên bảng
-
-    protected $primaryKey = 'id'; // Khóa chính
-
-    public $incrementing = true; // ID tự động tăng
-
-    protected $keyType = 'int';
-
-    public $timestamps = false; 
-
-    protected $fillable = [
-        'name',
-        'time_working',
-        'position',
-        'gender',
-        'address',
-    ];
-
-    // Quan hệ với bảng Position
-    public function positionInfo()
+    /**
+     * Hiển thị danh sách nhân viên.
+     */
+    public function index()
     {
-        return $this->belongsTo(Position::class, 'position');
+        $staffs = Staff::all();
+        return response()->json($staffs);
+    }
+
+    /**
+     * Lưu thông tin nhân viên mới.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'time_working' => 'required|integer',
+            'position' => 'required|exists:positions,id',
+            'gender' => 'required|in:male,female',
+            'address' => 'nullable|string',
+        ]);
+
+        $staff = Staff::create($request->all());
+
+        return response()->json($staff, 201);
+    }
+
+    /**
+     * Hiển thị thông tin một nhân viên cụ thể.
+     */
+    public function show($id)
+    {
+        $staff = Staff::findOrFail($id);
+        return response()->json($staff);
+    }
+
+    /**
+     * Cập nhật thông tin nhân viên.
+     */
+    public function update(Request $request, $id)
+    {
+        $staff = Staff::findOrFail($id);
+
+        $request->validate([
+            'name' => 'sometimes|string',
+            'time_working' => 'sometimes|integer',
+            'position' => 'sometimes|exists:positions,id',
+            'gender' => 'sometimes|in:male,female',
+            'address' => 'nullable|string',
+        ]);
+
+        $staff->update($request->all());
+
+        return response()->json($staff);
+    }
+
+    /**
+     * Xóa nhân viên.
+     */
+    public function destroy($id)
+    {
+        $staff = Staff::findOrFail($id);
+        $staff->delete();
+
+        return response()->json(['message' => 'Xóa nhân viên thành công']);
     }
 }

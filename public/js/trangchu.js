@@ -8,14 +8,17 @@ function updateRole() {
     }
 }
 
-const BASE_URL = 'https://laravel-kk8s.onrender.com'; // Địa chỉ cơ sở của API
+const BASE_URL = 'http://127.0.0.1:8000'; // Địa chỉ cơ sở của API
 const FETCH_TABLES_BY_AREA_API = `${BASE_URL}/api/tables/findByArea/{area_id}`;
 const RESET_TABLE_STATUS_API = `${BASE_URL}/api/table-times/updateStatus`;
 const LOAD_FOOD_OPTIONS_API = `${BASE_URL}/api/items/findFood`;
 const LOAD_DRINK_OPTIONS_API = `${BASE_URL}/api/items/findDrink`;
 const CREATE_ORDER_ITEM_API = `${BASE_URL}/api/order-items/create`;
 const TABLE_TIMES_API = `${BASE_URL}/api/table-times/create`; 
-const DoanhThuApi = `${BASE_URL}/doanhthu`
+const DoanhThuApi = `${BASE_URL}/doanhthu`;
+const apiResetTable = `${BASE_URL}/api/table-times/resetTable`;
+const apiFindTable = `${BASE_URL}/api/tables/findId`;
+const apiPay = `${BASE_URL}/api/table-times/pay`;
 
 document.querySelector(".BaoCao").addEventListener('click',(event) =>{
     event.preventDefault();
@@ -43,7 +46,7 @@ function fetchTablesByArea(area) {
     else{
         area_id = 2;
     }
-    fetch(`https://laravel-kk8s.onrender.com/api/tables/findByArea/${area_id}`)
+    fetch(`http://127.0.0.1:8000/api/tables/findByArea/${area_id}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -59,7 +62,28 @@ function fetchTablesByArea(area) {
         });
 }
 
+function ResetTable() {
+    fetch(apiResetTable, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') // Nếu cần token xác thực
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            console.log('Đã reset thời gian bàn thành công!');
+        } else {
+            console.log('Lỗi: ' + (data.error || 'Không xác định'));
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi khi gọi API:', error);
+    });
+}
 window.onload = function() {
+    ResetTable();
     resetTableStatus(); // Gọi hàm reset khi trang được load
 };
 
@@ -197,7 +221,7 @@ document.querySelectorAll('.content aside ul li').forEach((li, index) => {
 // const bookButton = document.getElementById('book-table');
 
 function showTablePopup(tableId, tableName, roomType, status) {
-    const popup = document.getElementById('popup');
+    const popup = document.getElementById('popupThongTin');
     const popupTitle = document.getElementById('popup-title');
     const popupInfo = document.getElementById('popup-info');
     const bookButton = document.getElementById('book-table');
@@ -225,42 +249,87 @@ function showTablePopup(tableId, tableName, roomType, status) {
     }
     // Thêm sự kiện click cho nút "Đặt bàn" trong popup thông tin bàn
     bookButton.addEventListener('click', () => {
-        const popup = document.getElementById('popup');
+        const popup = document.getElementById('popupThongTin');
         popup.style.display = 'none'; // Ẩn popup thông tin bàn
         showDatBanPopup(tableId); // Hiển thị popup đặt bàn
     });
     // Hiển thị popup
     popup.style.display = 'flex';
 }
+async function findTable(id) {
+    try {
+        const response = await fetch(`${apiFindTable}/${id}`);
+        
+        if (!response.ok) {
+            throw new Error('Không tìm thấy bàn');
+        }
 
+        const data = await response.json();
+        return {
+            area_id: data.area,
+            price: data.price
+        };
 
-
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Không tìm thấy bàn hoặc có lỗi xảy ra.');
+        return null; // Trả về null nếu có lỗi
+    }
+}
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('pay').addEventListener('click', function() {
-        // Lấy tableId từ thuộc tính data-table-id của popup
-        const popup = document.getElementById('popup');
+    document.getElementById('pay').addEventListener('click', async function() {
+        const popup = document.getElementById('popupThongTin');
         const tableId = popup.getAttribute('data-table-id');
-        console.log(tableId);
+
         if (!tableId) {
             alert('Không tìm thấy ID của bàn!');
             return;
         }
 
-        // Tính tổng tiền cần trả
-        const totalPrice = pricePerHour * timePlayed;
+        try {
+            // Đợi fetch dữ liệu bàn
+            const table = await findTable(tableId);
+            if (!table) return; // Nếu lỗi khi lấy bàn, thoát khỏi hàm
 
-        // Hiển thị thông tin thanh toán trong popup
-        document.getElementById('tableId').textContent = tableId;
-        document.getElementById('roomId').textContent = roomId;
-        document.getElementById('pricePerHour').textContent = pricePerHour.toLocaleString();
-        document.getElementById('timePlayed').textContent = timePlayed;
-        document.getElementById('totalPrice').textContent = totalPrice.toLocaleString();
+            // Gọi API thanh toán
+            const response = await fetch(`${apiPay}/${tableId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ table_id: tableId })
+            });
 
-        // Hiển thị popup thanh toán
-        document.getElementById('paymentPopup').style.display = 'block';
+            if (!response.ok) {
+                throw new Error('Không thể thực hiện thanh toán.');
+            }
+
+            const data = await response.json();
+
+            // Cập nhật dữ liệu thanh toán từ API
+            document.getElementById('tableId').textContent = tableId;
+            document.getElementById('roomId').textContent = table.area_id || 'Không xác định';
+            document.getElementById('pricePerHour').textContent = table.price.toLocaleString();
+            document.getElementById('timePlayed').textContent = `${data.time_used} phút`;
+            document.getElementById('totalPrice').textContent = (data.total_price || 0).toLocaleString();
+            // Hiển thị popup thanh toán
+            document.getElementById('paymentPopup').style.display = 'block';
+            document.getElementById('confirmPayment').addEventListener('click', function() {
+                document.getElementById('paymentPopup').style.display = 'none'; 
+                document.getElementById('popupThongTin').style.display = 'none'; 
+                window.location.reload();
+            });
+
+        } catch (error) {
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!');
+        }
     });
 });
+
+
 
 // Hàm hiển thị popup đặt bàn
 function showDatBanPopup(table_id) {
@@ -356,7 +425,6 @@ function showDatBanPopup(table_id) {
 }
 // Hàm tính thời gian kết thúc dựa trên thời gian bắt đầu và thời lượng
 function calculateEndTime(startTime, durationInHours) {
-    // startTime được trả về từ input[type="time"] với định dạng HH:MM
     const [startHour, startMinute] = startTime.split(':').map(Number);
     const duration = Number(durationInHours);
 
@@ -395,9 +463,9 @@ const cancelBookingButton = document.querySelector('.dat-ban-button button:nth-c
 cancelBookingButton.addEventListener('click', closeDatBanPopup); // Khi nhấn nút Hủy, đóng popup và xóa thông tin
 
 // Đóng popup thông tin bàn khi nhấn nút đóng
-const closeButton = document.querySelector('#popup .close');
+const closeButton = document.querySelector('#popupThongTin .close');
 closeButton.addEventListener('click', () => {
-    const popup = document.getElementById('popup');
+    const popup = document.getElementById('popupThongTin');
     popup.style.display = 'none'; // Ẩn popup thông tin bàn
 });
 

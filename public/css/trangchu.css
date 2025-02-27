@@ -309,28 +309,19 @@ main{
     filter: hue-rotate(-90deg) brightness(0.8); /* Màu xanh lá cây */
 }
 
-.popup {
-    display: none; /* Ẩn cửa sổ pop-up theo mặc định */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ đen */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Đặt z-index cao để cửa sổ pop-up nổi bật hơn các phần tử khác */
-    font-family: var(--font-family);
-}
-
 .popup-content {
     background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     height: 300px;
     width: 400px;
-
+    background-color: rgba(0, 0, 0, 0.5);
     position: relative;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Thay đổi thành space-between */
 }
 
 .popup .close {

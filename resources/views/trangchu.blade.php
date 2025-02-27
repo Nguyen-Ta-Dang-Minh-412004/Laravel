@@ -188,12 +188,14 @@
     </footer>
 </div>
 
-<div id="popup" class="popup">
+<!-- Popup thông tin bàn -->
+<div id="popupThongTin" class="dat-ban-popup">
     <div class="popup-content">
-        <span class="close">&times;</span>
-        <h2 id="popup-title">Thông tin bàn</h2>
-        <p id="popup-info">Thông tin bàn sẽ xuất hiện ở đây.</p>
-
+        <span class="close" onclick="closePopup('popupThongTin')">&times;</span>
+        <div class="thongTin">
+            <h2 id="popup-title">Thông tin bàn</h2>
+            <p id="popup-info">Thông tin bàn sẽ xuất hiện ở đây.</p>
+        </div>
         <p id="amount-to-pay" style="display: none;">Số tiền cần thanh toán: 0 đồng</p>
         <div class="popup-buttons">
             <button id="book-table">Đặt bàn</button>
@@ -201,16 +203,23 @@
         </div>
     </div>
 </div>
-<div id="paymentPopup" class="popup" style="display: none;">
-    <h3>Thông tin thanh toán</h3>
-    <p>Mã bàn: <span id="tableId"></span></p>
-    <p>Mã phòng: <span id="roomId"></span></p>
-    <p>Tiền trên 1 giờ: <span id="pricePerHour"></span> VND</p>
-    <p>Số thời gian chơi: <span id="timePlayed"></span> giờ</p>
-    <p>Tổng tiền cần trả: <span id="totalPrice"></span> VND</p>
-    <button id="confirmPayment">Xác nhận thanh toán</button>
-    <button id="closePopup">Đóng</button>
+
+<!-- Popup thanh toán -->
+<div id="paymentPopup" class="dat-ban-popup">
+    <div class="popup-content">
+        <span class="close" onclick="closePopup('paymentPopup')">&times;</span>
+        <h3>Thông tin thanh toán</h3>
+        <div class="thongTin">
+            <p>Mã bàn: <span id="tableId"></span></p>
+            <p>Mã phòng: <span id="roomId"></span></p>
+            <p>Tiền trên 1 giờ: <span id="pricePerHour"></span> VND</p>
+            <p>Số thời gian chơi: <span id="timePlayed"></span></p>
+            <p>Tổng tiền cần trả: <span id="totalPrice"></span> VND</p>
+            <button id="confirmPayment">Xác nhận thanh toán</button>
+        </div>
+    </div>
 </div>
+
 <div id="dat-ban-popup" class="dat-ban-popup">
     <div class="popup-content">
         <span class="close">&times;</span>
